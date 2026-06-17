@@ -24,12 +24,49 @@ class ColorMemoryGame {
   private readonly lightOnDuration: number = 600;
   private readonly lightOffDuration: number = 300;
 
+  private isTrainingMode: boolean = false;
+  private trainingDuration: number = 3;
+  private trainingRemaining: number = 0;
+  private trainingTimerId: number | null = null;
+  private trainingAttempts: number = 0;
+  private trainingMaxLevel: number = 0;
+  private trainingLevelSum: number = 0;
+  private trainingActive: boolean = false;
+
+  private readonly timerDisplay: HTMLElement;
+  private readonly timerContainer: HTMLElement;
+  private readonly trainingStartBtn: HTMLButtonElement;
+  private readonly trainingStopBtn: HTMLButtonElement;
+  private readonly trainingStatsEl: HTMLElement;
+  private readonly trainingAttemptsEl: HTMLElement;
+  private readonly durationBtns: NodeListOf<HTMLButtonElement>;
+  private readonly summaryOverlay: HTMLElement;
+  private readonly summaryDuration: HTMLElement;
+  private readonly summaryMaxLevel: HTMLElement;
+  private readonly summaryAttempts: HTMLElement;
+  private readonly summaryAvgLevel: HTMLElement;
+  private readonly summaryCloseBtn: HTMLButtonElement;
+
   constructor() {
     this.buttons = document.querySelectorAll('.color-btn');
     this.startBtn = document.getElementById('start-btn') as HTMLButtonElement;
     this.currentLevelEl = document.getElementById('current-level') as HTMLElement;
     this.highScoreEl = document.getElementById('high-score') as HTMLElement;
     this.gameStatusEl = document.getElementById('game-status') as HTMLElement;
+
+    this.timerDisplay = document.getElementById('timer-display') as HTMLElement;
+    this.timerContainer = document.getElementById('training-timer') as HTMLElement;
+    this.trainingStartBtn = document.getElementById('training-start-btn') as HTMLButtonElement;
+    this.trainingStopBtn = document.getElementById('training-stop-btn') as HTMLButtonElement;
+    this.trainingStatsEl = document.getElementById('training-stats') as HTMLElement;
+    this.trainingAttemptsEl = document.getElementById('training-attempts') as HTMLElement;
+    this.durationBtns = document.querySelectorAll('.duration-btn');
+    this.summaryOverlay = document.getElementById('training-summary-overlay') as HTMLElement;
+    this.summaryDuration = document.getElementById('summary-duration') as HTMLElement;
+    this.summaryMaxLevel = document.getElementById('summary-max-level') as HTMLElement;
+    this.summaryAttempts = document.getElementById('summary-attempts') as HTMLElement;
+    this.summaryAvgLevel = document.getElementById('summary-avg-level') as HTMLElement;
+    this.summaryCloseBtn = document.getElementById('summary-close-btn') as HTMLButtonElement;
 
     this.init();
   }
@@ -48,6 +85,106 @@ class ColorMemoryGame {
         this.handlePlayerInput(color);
       });
     });
+
+    this.durationBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (this.trainingActive) return;
+        this.durationBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.trainingDuration = parseInt(btn.dataset.duration!);
+      });
+    });
+
+    this.trainingStartBtn.addEventListener('click', () => this.startTraining());
+    this.trainingStopBtn.addEventListener('click', () => this.stopTraining());
+    this.summaryCloseBtn.addEventListener('click', () => this.closeSummary());
+  }
+
+  private startTraining(): void {
+    this.isTrainingMode = true;
+    this.trainingActive = true;
+    this.trainingAttempts = 0;
+    this.trainingMaxLevel = 0;
+    this.trainingLevelSum = 0;
+    this.trainingRemaining = this.trainingDuration * 60;
+
+    this.trainingStatsEl.style.display = '';
+    this.trainingAttemptsEl.textContent = '0';
+
+    this.trainingStartBtn.style.display = 'none';
+    this.trainingStopBtn.style.display = '';
+    this.startBtn.disabled = true;
+
+    this.durationBtns.forEach(b => b.disabled = true);
+
+    this.updateTimerDisplay();
+    this.timerContainer.className = 'training-timer running';
+
+    this.trainingTimerId = window.setInterval(() => {
+      this.trainingRemaining--;
+      this.updateTimerDisplay();
+
+      if (this.trainingRemaining <= 10) {
+        this.timerContainer.className = 'training-timer critical';
+      } else if (this.trainingRemaining <= 30) {
+        this.timerContainer.className = 'training-timer warning';
+      }
+
+      if (this.trainingRemaining <= 0) {
+        this.endTraining();
+      }
+    }, 1000);
+
+    this.startGame();
+  }
+
+  private stopTraining(): void {
+    this.endTraining();
+  }
+
+  private endTraining(): void {
+    if (this.trainingTimerId !== null) {
+      clearInterval(this.trainingTimerId);
+      this.trainingTimerId = null;
+    }
+
+    this.trainingActive = false;
+    this.isTrainingMode = false;
+    this.isPlaying = false;
+
+    this.trainingStartBtn.style.display = '';
+    this.trainingStopBtn.style.display = 'none';
+    this.startBtn.disabled = false;
+    this.durationBtns.forEach(b => b.disabled = false);
+    this.timerContainer.className = 'training-timer';
+    this.setButtonsDisabled(true);
+
+    this.showTrainingSummary();
+  }
+
+  private showTrainingSummary(): void {
+    const avgLevel = this.trainingAttempts > 0
+      ? (this.trainingLevelSum / this.trainingAttempts).toFixed(1)
+      : '0';
+
+    this.summaryDuration.textContent = `${this.trainingDuration} 分钟`;
+    this.summaryMaxLevel.textContent = this.trainingMaxLevel.toString();
+    this.summaryAttempts.textContent = this.trainingAttempts.toString();
+    this.summaryAvgLevel.textContent = avgLevel;
+
+    this.summaryOverlay.style.display = 'flex';
+  }
+
+  private closeSummary(): void {
+    this.summaryOverlay.style.display = 'none';
+    this.showStatus('训练结束！点击开始按钮重新开始', '');
+  }
+
+  private updateTimerDisplay(): void {
+    const mins = Math.floor(this.trainingRemaining / 60);
+    const secs = this.trainingRemaining % 60;
+    this.timerDisplay.textContent =
+      `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 
   private async fetchHighScore(): Promise<void> {
@@ -88,11 +225,15 @@ class ColorMemoryGame {
     this.level = 0;
     this.isPlaying = true;
     this.currentLevelEl.textContent = '0';
-    
+
     this.setButtonsDisabled(true);
     this.startBtn.disabled = true;
-    
-    this.showStatus('游戏开始！', 'playing');
+
+    if (this.isTrainingMode) {
+      this.showStatus('训练中 - 加油！', 'playing');
+    } else {
+      this.showStatus('游戏开始！', 'playing');
+    }
     this.nextRound();
   }
 
@@ -117,7 +258,7 @@ class ColorMemoryGame {
     for (let i = 0; i < this.sequence.length; i++) {
       const color = this.sequence[i];
       await this.lightUpButton(color);
-      
+
       if (i < this.sequence.length - 1) {
         await this.delay(this.lightOffDuration);
       }
@@ -170,15 +311,31 @@ class ColorMemoryGame {
   }
 
   private async gameOver(): Promise<void> {
-    this.isPlaying = false;
-    this.setButtonsDisabled(true);
-    this.startBtn.disabled = false;
-
     const finalScore = this.level - 1;
-    this.showStatus(`游戏结束！你完成了 ${finalScore} 关`, 'gameover');
+
+    if (this.isTrainingMode) {
+      this.trainingAttempts++;
+      this.trainingLevelSum += finalScore;
+      if (finalScore > this.trainingMaxLevel) {
+        this.trainingMaxLevel = finalScore;
+      }
+      this.trainingAttemptsEl.textContent = this.trainingAttempts.toString();
+    }
 
     if (finalScore > this.highScore) {
       await this.saveHighScore(finalScore);
+    }
+
+    if (this.isTrainingMode && this.trainingActive) {
+      this.isPlaying = false;
+      this.showStatus(`本局 ${finalScore} 关，继续！`, 'gameover');
+      await this.delay(1200);
+      this.startGame();
+    } else {
+      this.isPlaying = false;
+      this.setButtonsDisabled(true);
+      this.startBtn.disabled = false;
+      this.showStatus(`游戏结束！你完成了 ${finalScore} 关`, 'gameover');
     }
   }
 

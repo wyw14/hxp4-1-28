@@ -19,6 +19,28 @@
         <span class="score-label">最高记录</span>
         <span id="high-score" class="score-value">0</span>
       </div>
+      <div class="score-item" id="training-stats" style="display:none;">
+        <span class="score-label">训练尝试</span>
+        <span id="training-attempts" class="score-value">0</span>
+      </div>
+    </div>
+
+    <div class="training-panel" id="training-panel">
+      <div class="training-header">
+        <span class="training-title">⏱️ 专注训练</span>
+      </div>
+      <div class="training-duration-select">
+        <button class="duration-btn" data-duration="1">1 分钟</button>
+        <button class="duration-btn active" data-duration="3">3 分钟</button>
+        <button class="duration-btn" data-duration="5">5 分钟</button>
+      </div>
+      <div class="training-timer" id="training-timer">
+        <span id="timer-display">00:00</span>
+      </div>
+      <div class="training-controls">
+        <button id="training-start-btn" class="training-btn start">开始训练</button>
+        <button id="training-stop-btn" class="training-btn stop" style="display:none;">结束训练</button>
+      </div>
     </div>
 
     <div id="game-status" class="game-status">点击开始按钮开始游戏</div>
@@ -32,6 +54,31 @@
 
     <div class="controls">
       <button id="start-btn" class="start-btn">开始游戏</button>
+    </div>
+
+    <div class="training-summary-overlay" id="training-summary-overlay" style="display:none;">
+      <div class="training-summary">
+        <h2>🏆 训练汇总</h2>
+        <div class="summary-items">
+          <div class="summary-item">
+            <span class="summary-label">训练时长</span>
+            <span class="summary-value" id="summary-duration">-</span>
+          </div>
+          <div class="summary-item highlight">
+            <span class="summary-label">最高关卡</span>
+            <span class="summary-value" id="summary-max-level">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">总尝试次数</span>
+            <span class="summary-value" id="summary-attempts">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">平均关卡</span>
+            <span class="summary-value" id="summary-avg-level">-</span>
+          </div>
+        </div>
+        <button id="summary-close-btn" class="summary-close-btn">确定</button>
+      </div>
     </div>
 
     <div class="instructions">

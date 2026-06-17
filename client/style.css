@@ -262,3 +262,216 @@ h1 {
     padding: 15px;
   }
 }
+
+.training-panel {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.training-header {
+  margin-bottom: 15px;
+}
+
+.training-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #a29bfe;
+}
+
+.training-duration-select {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.duration-btn {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #aaa;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.duration-btn:hover {
+  color: #fff;
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.duration-btn.active {
+  color: #fff;
+  background: rgba(102, 126, 234, 0.3);
+  border-color: #667eea;
+}
+
+.training-timer {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  text-align: center;
+}
+
+#timer-display {
+  font-size: 2.2rem;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  color: #dfe6e9;
+  letter-spacing: 2px;
+}
+
+.training-timer.running #timer-display {
+  color: #48dbfb;
+}
+
+.training-timer.warning #timer-display {
+  color: #feca57;
+}
+
+.training-timer.critical #timer-display {
+  color: #ff6b6b;
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.training-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.training-btn {
+  flex: 1;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.training-btn.start {
+  background: linear-gradient(45deg, #00b894 0%, #00cec9 100%);
+  box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
+}
+
+.training-btn.start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 184, 148, 0.6);
+}
+
+.training-btn.stop {
+  background: linear-gradient(45deg, #e17055 0%, #d63031 100%);
+  box-shadow: 0 4px 15px rgba(214, 48, 49, 0.4);
+}
+
+.training-btn.stop:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(214, 48, 49, 0.6);
+}
+
+.training-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.training-summary-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.training-summary {
+  background: linear-gradient(135deg, #2d1b69 0%, #1a1a2e 100%);
+  border-radius: 20px;
+  padding: 35px 40px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.training-summary h2 {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  background: linear-gradient(45deg, #feca57, #ff6b6b, #48dbfb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.summary-item.highlight {
+  background: rgba(254, 202, 87, 0.15);
+  border: 1px solid rgba(254, 202, 87, 0.3);
+}
+
+.summary-label {
+  font-size: 0.95rem;
+  color: #b2bec3;
+}
+
+.summary-value {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.summary-item.highlight .summary-value {
+  color: #feca57;
+}
+
+.summary-close-btn {
+  padding: 12px 50px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.summary-close-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+}
